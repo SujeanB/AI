@@ -332,14 +332,16 @@ class Node(object):
         self.puzzle = puzzle 
         self.direction = direction
         self.parent = parent
+        if parent == None:
+            self.height = 0 # g of n
+        else:
+            self.height = parent.height + 1
     
-    '''
     def fn1(self):
-        return self.misplacedTiles() + self.moves
+        return self.misplacedTiles() + self.height
     
     def fn2(self):
-        return self.manhattanDist() + self.moves
-    '''
+        return self.manhattanDist() + self.height
 
     def __lt__(self, other): 
         return 0
@@ -432,13 +434,19 @@ def h1Algo(start_node):
     visited = []
     expanded = 0
     display(start_node.puzzle)
-    PQueue.put((start_node.misplacedTiles(), start_node)) 
+    PQueue.put((start_node.fn1(), start_node)) 
     # print(start_node.fn1())
+    if size == 3:
+        goalState = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
+    elif size == 4: 
+        goalState = [[0, 1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11], [12, 13, 14, 15]]
+    elif size == 5: 
+        goalState = [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9], [10, 11, 12, 13, 14], [15, 16, 17, 18, 19], [20, 21, 22, 23, 24]]
     while not PQueue.empty():  
-        h, n = PQueue.get() 
+        fn, n = PQueue.get() 
         if n.puzzle in visited:   
             continue
-        if h == 0: 
+        if goalState == n.puzzle:  
             print('Misplaced Tiles Heuristic: ')
             print('Expanded nodes:', expanded)
             steps = (len(n.path())) - 1
@@ -457,19 +465,25 @@ def h1Algo(start_node):
         expanded += 1
        
         for nnode in n.getChildren(): 
-            PQueue.put((nnode.misplacedTiles(), nnode))
+            PQueue.put((nnode.fn1(), nnode))
 
 
 def h2Algo(start_node):
     PQueue = PriorityQueue() 
     visited = []
     expanded = 0
-    PQueue.put((start_node.manhattanDist(), start_node)) 
+    PQueue.put((start_node.fn2(), start_node))
+    if size == 3:
+        goalState = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
+    elif size == 4: 
+        goalState = [[0, 1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11], [12, 13, 14, 15]]
+    elif size == 5: 
+        goalState = [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9], [10, 11, 12, 13, 14], [15, 16, 17, 18, 19], [20, 21, 22, 23, 24]]
     while not PQueue.empty():  
-        h, n = PQueue.get() 
+        fn, n = PQueue.get() 
         if n.puzzle in visited:   
             continue
-        if h == 0: 
+        if goalState == n.puzzle:  
             print('Manhattan Distance Heuristic:')
             print('Expanded nodes:', expanded)
             steps = (len(n.path())) - 1
@@ -488,7 +502,7 @@ def h2Algo(start_node):
         expanded += 1
        
         for nnode in n.getChildren(): 
-            PQueue.put((nnode.manhattanDist(), nnode))     
+            PQueue.put((nnode.fn2(), nnode))     
 
 
 def h3Algo(start_node):
